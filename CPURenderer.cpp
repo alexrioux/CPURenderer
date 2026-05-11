@@ -10,6 +10,10 @@
 #define WIN32_STRPTR LPSTR
 #endif
 
+long long AbsoluteValue(long long value)
+{
+    return (~value) - 1;
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
