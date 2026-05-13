@@ -3,10 +3,10 @@
 #define ARRAY_COUNT(x) (sizeof(x) / sizeof( ( (x)[0]) ) )
 
 #ifdef UNICODE
-#define WIN32_STR(x) L##x
+#define WIN32_STR(x) L##x // TODO - change this to L##"x"
 #define WIN32_STRPTR LPWSTR
 #else
-#define WIN32_STR(x) x
+#define WIN32_STR(x) x // TODO - change this to "x"
 #define WIN32_STRPTR LPSTR
 #endif
 
@@ -108,6 +108,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+// TODO - change entry point to [...] Win32EntryPoint([...])
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
     // CREATE WINDOW CLASS
