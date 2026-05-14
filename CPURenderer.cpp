@@ -43,14 +43,14 @@ static void RenderBlueGradient(FrameBuffer& fb)
     unsigned int byteStride     = bitStride >> 3; // divide by 2^3
 
     // RENDER PIXELDATA
-    for (int scanLine = 0; scanLine < fb.height; scanLine++)
+    for (unsigned int scanLine = 0; scanLine < fb.height; scanLine++)
     {
-        for (int pixel = 0; pixel < byteStride; pixel += 3)
+        for (unsigned int pixel = 0; pixel < byteStride; pixel += 3)
         {
             int currentByte = (scanLine * byteStride) + pixel;
 
             float t = (float)pixel / (float)byteStride;
-            int value = 255.0f * t; // TODO - change constant to max byte number
+            int value = (int)(255.0f * t); // TODO - change constant to max byte number
 
             ((unsigned char*)fb.data)[currentByte]      = (unsigned char)(value);   // B
             ((unsigned char*)fb.data)[currentByte + 1]  = (unsigned char)(0x00);    // G
@@ -78,10 +78,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             int linesDrawn = SetDIBitsToDevice(
                 deviceContext,
                 0, 0,
-                g_DIB.info.bmiHeader.biWidth, AbsoluteValue(g_DIB.info.bmiHeader.biHeight),
+                (unsigned int)g_DIB.info.bmiHeader.biWidth, (unsigned int)AbsoluteValue(g_DIB.info.bmiHeader.biHeight),
                 0, 0,
                 0,
-                AbsoluteValue(g_DIB.info.bmiHeader.biHeight),
+                (unsigned int)AbsoluteValue(g_DIB.info.bmiHeader.biHeight),
                 g_FrameBuffer.data,
                 &g_DIB.info,
                 g_DIB.colorUse
@@ -163,11 +163,11 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     BITMAPINFOHEADER bitmapHeader   = {};
     bitmapHeader.biSize             = sizeof(BITMAPINFOHEADER);
     bitmapHeader.biWidth            = g_FrameBuffer.width;
-    bitmapHeader.biHeight           = -g_FrameBuffer.height; // origin @ upper-left corner
+    bitmapHeader.biHeight           = -(int)(g_FrameBuffer.height); // origin @ upper-left corner
     bitmapHeader.biPlanes           = 1;
     bitmapHeader.biBitCount         = g_FrameBuffer.bitsPerPixel;
     bitmapHeader.biCompression      = BI_RGB;
-    bitmapHeader.biSizeImage        = AbsoluteValue(bitmapHeader.biHeight) * byteStride;
+    bitmapHeader.biSizeImage        = (unsigned long)(AbsoluteValue(bitmapHeader.biHeight) * byteStride);
     bitmapHeader.biXPelsPerMeter    = 0;
     bitmapHeader.biYPelsPerMeter    = 0;
     bitmapHeader.biClrUsed          = 0;
