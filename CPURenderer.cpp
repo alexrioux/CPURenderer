@@ -1,3 +1,5 @@
+extern "C" int _fltused = 0;
+
 #include <windows.h>
 
 #define ARRAY_COUNT(x) (sizeof(x) / sizeof( ( (x)[0]) ) )
@@ -108,8 +110,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// TODO - change entry point to [...] Win32EntryPoint([...])
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
     // CREATE WINDOW CLASS
     WNDCLASSEX windowClass      = {};
