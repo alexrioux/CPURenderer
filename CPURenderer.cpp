@@ -32,7 +32,7 @@ static void RenderBlueGradient(FrameBuffer& fb)
 {
     if (!fb.data)
     {
-        OutputDebugString(WIN32_STR("Could not render gradient, data is unitialized"));
+        OutputDebugString(WIN32_STR("Could not render gradient, data is unitialized\n"));
         return;
     }
 
@@ -91,7 +91,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             if (linesDrawn <= 0)
             {
-                OutputDebugString(WIN32_STR("SetDIBitsToDevice failed"));
+                OutputDebugString(WIN32_STR("SetDIBitsToDevice failed\n"));
             }
         }
         break;
@@ -122,7 +122,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
 
     if (!RegisterClassEx(&windowClass))
     {
-        OutputDebugString(WIN32_STR("Failed to register window class"));
+        OutputDebugString(WIN32_STR("Failed to register window class\n"));
         return 1;
     }
 
@@ -141,7 +141,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
 
     if (!windowHandle)
     {
-        OutputDebugString(WIN32_STR("Failed to create window"));
+        OutputDebugString(WIN32_STR("Failed to create window\n"));
         return 1;
     }
 
@@ -184,7 +184,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
 
     if (!DIBHandle || !g_FrameBuffer.data)
     {
-        OutputDebugString(WIN32_STR("Failed to create DIB"));
+        OutputDebugString(WIN32_STR("Failed to create DIB\n"));
         return -1;
     }
 
