@@ -173,16 +173,11 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     bitmapHeader.biClrUsed          = 0;
     bitmapHeader.biClrImportant     = 0;
     g_DIB.info.bmiHeader            = bitmapHeader;
-    HBITMAP DIBHandle = CreateDIBSection(
-        0,
-        &g_DIB.info,
-        g_DIB.colorUse,
-        &g_FrameBuffer.data,
-        0,
-        0
-    );
 
-    if (!DIBHandle || !g_FrameBuffer.data)
+    // ALLOCATE FRAMEBUFFER'S MEMORY
+    SIZE_T size = g_FrameBuffer.height * byteStride;
+    g_FrameBuffer.data = VirtualAlloc(0, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!g_FrameBuffer.data)
     {
         OutputDebugString(WIN32_STR("Failed to create DIB\n"));
         return -1;
