@@ -5,10 +5,10 @@ extern "C" int _fltused = 0;
 #define ARRAY_COUNT(x) (sizeof(x) / sizeof( ( (x)[0]) ) )
 
 #ifdef UNICODE
-#define WIN32_STR(x) L##x // TODO - change this to L##"x"
+#define WIN32_STR(x) L##x
 #define WIN32_STRPTR LPWSTR
 #else
-#define WIN32_STR(x) x // TODO - change this to "x"
+#define WIN32_STR(x) x
 #define WIN32_STRPTR LPSTR
 #endif
 
