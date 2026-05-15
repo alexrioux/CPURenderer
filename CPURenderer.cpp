@@ -28,6 +28,15 @@ struct Win32DIB
 }
 g_DIB;
 
+static DWORD Win32_GetFramebufferStride(FrameBuffer fb)
+{
+    unsigned int bitsPerRow = fb.width * fb.bitsPerPixel;
+    int bitMask             = (int)0b11111111111111111111111111100000;
+    unsigned int bitStride  = (bitsPerRow + 31) & bitMask; // add just enough to mask the unused bits
+    unsigned int byteStride = bitStride >> 3; // divide by 2^3
+    return (DWORD)byteStride;
+}
+
 static void RenderGradient(FrameBuffer& fb)
 {
     if (!fb.data)
@@ -36,13 +45,8 @@ static void RenderGradient(FrameBuffer& fb)
         return;
     }
 
-    // CALCULATE STRIDE
-    unsigned int bitsPerRow     = fb.width * fb.bitsPerPixel;
-    int bitMask                 = (int)0b11111111111111111111111111100000;
-    unsigned int bitStride      = (bitsPerRow + 31) & bitMask; // add just enough to mask the unused bits
-    unsigned int byteStride     = bitStride >> 3; // divide by 2^3
-
     // RENDER PIXELDATA
+    unsigned int byteStride     = Win32_GetFramebufferStride(fb);
     unsigned int bytesPerPixel  = fb.bitsPerPixel >> 3;
     unsigned int bytesPerRow    = fb.width * bytesPerPixel;
     for (unsigned int row = 0; row < fb.height; row++)
