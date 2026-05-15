@@ -5,11 +5,9 @@ extern "C" int _fltused = 0;
 #define ARRAY_COUNT(x) (sizeof(x) / sizeof( ( (x)[0]) ) )
 
 #ifdef UNICODE
-#define WIN32_STR(x) L##x
-#define WIN32_STRPTR LPWSTR
+typedef wchar_t* win32string;
 #else
-#define WIN32_STR(x) x
-#define WIN32_STRPTR LPSTR
+typedef char* win32string;
 #endif
 
 // TODO - restructure memory layout of structs for better packing
@@ -41,7 +39,7 @@ static void RenderGradient(FrameBuffer& fb)
 {
     if (!fb.data)
     {
-        OutputDebugString(WIN32_STR("Could not render gradient, data is unitialized\n"));
+        OutputDebugString((win32string)"Could not render gradient, data is unitialized\n");
         return;
     }
 
@@ -98,7 +96,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             if (linesDrawn <= 0)
             {
-                OutputDebugString(WIN32_STR("SetDIBitsToDevice failed\n"));
+                OutputDebugString((win32string)"SetDIBitsToDevice failed\n");
             }
         }
         break;
@@ -126,10 +124,10 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     windowClass.style           = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     windowClass.lpfnWndProc     = WndProc;
     windowClass.hInstance       = hInstance;
-    windowClass.lpszClassName   = WIN32_STR("CPURenderer");
+    windowClass.lpszClassName   = (win32string)"CPURenderer";
     if (!RegisterClassEx(&windowClass))
     {
-        OutputDebugString(WIN32_STR("Failed to register window class\n"));
+        OutputDebugString((win32string)"Failed to register window class\n");
         return 1;
     }
 
@@ -167,7 +165,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     g_FrameBuffer.data = VirtualAlloc(0, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     if (!g_FrameBuffer.data)
     {
-        OutputDebugString(WIN32_STR("Failed to create DIB\n"));
+        OutputDebugString((win32string)"Failed to create DIB\n");
         return -1;
     }
 
@@ -188,7 +186,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     );
     if (!windowHandle)
     {
-        OutputDebugString(WIN32_STR("Failed to create window\n"));
+        OutputDebugString((win32string)"Failed to create window\n");
         return 1;
     }
 
