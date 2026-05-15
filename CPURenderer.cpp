@@ -45,7 +45,7 @@ static void RenderGradient(FrameBuffer& fb)
     // RENDER PIXELDATA
     for (unsigned int scanLine = 0; scanLine < fb.height; scanLine++)
     {
-        for (unsigned int pixel = 0; pixel < byteStride; pixel += 3)
+        for (unsigned int pixel = 0; pixel < fb.width; pixel += 3)
         {
             int currentByte = (scanLine * byteStride) + pixel;
 
