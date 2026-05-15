@@ -28,7 +28,7 @@ struct Win32DIB
 }
 g_DIB;
 
-static void RenderBlueGradient(FrameBuffer& fb)
+static void RenderGradient(FrameBuffer& fb)
 {
     if (!fb.data)
     {
@@ -52,9 +52,12 @@ static void RenderBlueGradient(FrameBuffer& fb)
             float t = (float)pixel / (float)byteStride;
             int value = (int)(255.0f * t); // TODO - change constant to max byte number
 
+            float y = (float)scanLine / (float)fb.height;
+            int yvalue = (int)(255.0f * y); // TODO - change constant to max byte number
+
             ((unsigned char*)fb.data)[currentByte]      = (unsigned char)(value);   // B
             ((unsigned char*)fb.data)[currentByte + 1]  = (unsigned char)(0x00);    // G
-            ((unsigned char*)fb.data)[currentByte + 2]  = (unsigned char)(0x00);    // R
+            ((unsigned char*)fb.data)[currentByte + 2]  = (unsigned char)(yvalue);  // R
         }
     }
 }
@@ -95,6 +98,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+            RenderGradient(g_FrameBuffer);
         case WM_DESTROY:
         {
             PostQuitMessage(0);
@@ -183,7 +187,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
         return -1;
     }
 
-    RenderBlueGradient(g_FrameBuffer);
+    RenderGradient(g_FrameBuffer);
 
     MSG msg = {};
     while (GetMessage(&msg, 0, 0, 0))
