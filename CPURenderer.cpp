@@ -123,29 +123,9 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     windowClass.lpfnWndProc     = WndProc;
     windowClass.hInstance       = hInstance;
     windowClass.lpszClassName   = WIN32_STR("CPURenderer");
-
     if (!RegisterClassEx(&windowClass))
     {
         OutputDebugString(WIN32_STR("Failed to register window class\n"));
-        return 1;
-    }
-
-    HWND windowHandle = CreateWindowEx(
-        0,
-        windowClass.lpszClassName,
-        0,
-        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        0,
-        0,
-        hInstance,
-        0
-    );
-
-    if (!windowHandle)
-    {
-        OutputDebugString(WIN32_STR("Failed to create window\n"));
         return 1;
     }
 
@@ -188,6 +168,25 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     }
 
     RenderGradient(g_FrameBuffer);
+
+    // CREATE WINDOW
+    HWND windowHandle = CreateWindowEx(
+        0,
+        windowClass.lpszClassName,
+        0,
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        0,
+        0,
+        hInstance,
+        0
+    );
+    if (!windowHandle)
+    {
+        OutputDebugString(WIN32_STR("Failed to create window\n"));
+        return 1;
+    }
 
     MSG msg = {};
     while (GetMessage(&msg, 0, 0, 0))
