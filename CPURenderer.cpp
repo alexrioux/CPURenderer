@@ -43,21 +43,21 @@ static void RenderGradient(FrameBuffer& fb)
     unsigned int byteStride     = bitStride >> 3; // divide by 2^3
 
     // RENDER PIXELDATA
-    for (unsigned int scanLine = 0; scanLine < fb.height; scanLine++)
+    unsigned int bytesPerPixel  = fb.bitsPerPixel >> 3;
+    unsigned int bytesPerRow    = fb.width * bytesPerPixel;
+    for (unsigned int row = 0; row < fb.height; row++)
     {
-        for (unsigned int pixel = 0; pixel < fb.width; pixel += 3)
+        for (unsigned int column = 0; column < bytesPerRow; column += bytesPerPixel)
         {
-            int currentByte = (scanLine * byteStride) + pixel;
+            float tb        = (float)column / (float)byteStride;
+            int blueValue   = (int)(255.0f * tb); // TODO - change constant to max byte number
+            float tr        = (float)row / (float)fb.height;
+            int redValue    = (int)(255.0f * tr); // TODO - change constant to max byte number
 
-            float t = (float)pixel / (float)byteStride;
-            int value = (int)(255.0f * t); // TODO - change constant to max byte number
-
-            float y = (float)scanLine / (float)fb.height;
-            int yvalue = (int)(255.0f * y); // TODO - change constant to max byte number
-
-            ((unsigned char*)fb.data)[currentByte]      = (unsigned char)(value);   // B
+            int currentByte                             = (row * byteStride) + column;
+            ((unsigned char*)fb.data)[currentByte]      = (unsigned char)(blueValue);   // B
             ((unsigned char*)fb.data)[currentByte + 1]  = (unsigned char)(0x00);    // G
-            ((unsigned char*)fb.data)[currentByte + 2]  = (unsigned char)(yvalue);  // R
+            ((unsigned char*)fb.data)[currentByte + 2]  = (unsigned char)(redValue);  // R
         }
     }
 }
