@@ -30,6 +30,8 @@ static DWORD Win32_GetFramebufferStride(FrameBuffer fb)
 
 static void RenderGradient(FrameBuffer& fb)
 {
+    // TODO - SIMD
+
     if (!fb.data)
     {
         LogError("Could not render gradient, framebuffer's data is unitialized\n");
@@ -95,7 +97,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+        case WM_SIZE:
+        {
+            // GET CLIENT RECT
+            RECT rc = {};
+            if (!GetClientRect(hWnd, &rc))
+            {
+                LogError("CPURenderer: Couldn't retrieve the client area's dimensions\n");
+                return -1;
+            }
+
+            // RESIZE FRAMEBUFFER
+            VirtualFree(g_FrameBuffer.data, 0, MEM_DECOMMIT);
+            g_FrameBuffer.width         = (unsigned int)(rc.right - rc.left);
+            g_FrameBuffer.height        = (unsigned int)(rc.bottom - rc.top) + 1; // TODO - Fix bottom gap of ~2 pixels
+            DWORD byteStride            = Win32_GetFramebufferStride(g_FrameBuffer);
+            ulong bufferSize            = g_FrameBuffer.height * byteStride;
+            g_FrameBuffer.data          = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+            if (!g_FrameBuffer.data)
+            {
+                LogError("Failed to resize the framebuffer\n");
+                return -1;
+            }
+            // RESIZE DIB
+            g_DIB.info.bmiHeader.biWidth        = g_FrameBuffer.width;
+            g_DIB.info.bmiHeader.biHeight       = -(int)(g_FrameBuffer.height); // origin @ upper-left corner
+            g_DIB.info.bmiHeader.biSizeImage    = (unsigned long)(AbsoluteValue(g_DIB.info.bmiHeader.biHeight) * byteStride);
+
             RenderGradient(g_FrameBuffer);
+        }
+        break;
         case WM_DESTROY:
         {
             PostQuitMessage(0);
