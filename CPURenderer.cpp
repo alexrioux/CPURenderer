@@ -4,19 +4,18 @@ extern "C" int _fltused = 0;
 #include "types.h"
 #include "logger.h"
 
-// TODO - restructure memory layout of structs for better packing
 struct FrameBuffer
 {
-    unsigned int width;
-    unsigned int height;
-    unsigned short bitsPerPixel;
-    void* data;
+    void* data                  = 0;
+    unsigned int width          = 0;
+    unsigned int height         = 0;
+    unsigned short bitsPerPixel = 0;
 }
 g_FrameBuffer;
 struct Win32DIB
 {
-    BITMAPINFO info;
-    int colorUse;
+    BITMAPINFO info = {};
+    int colorUse    = DIB_RGB_COLORS;
 }
 g_DIB;
 
