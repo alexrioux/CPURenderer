@@ -4,11 +4,7 @@ extern "C" int _fltused = 0;
 
 #define ARRAY_COUNT(x) (sizeof(x) / sizeof( ( (x)[0]) ) )
 
-#ifdef UNICODE
-typedef wchar_t* win32string;
-#else
-typedef char* win32string;
-#endif
+#include "logger.h"
 
 // TODO - restructure memory layout of structs for better packing
 struct FrameBuffer
@@ -39,7 +35,7 @@ static void RenderGradient(FrameBuffer& fb)
 {
     if (!fb.data)
     {
-        OutputDebugString((win32string)"Could not render gradient, data is unitialized\n");
+        LogError("Could not render gradient, framebuffer's data is unitialized\n");
         return;
     }
 
@@ -75,6 +71,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         case WM_PAINT:
         {
+            LogInfo("MW_PAINT\n");
+
             PAINTSTRUCT paintStruct     = {};
             HDC deviceContext           = {};
             deviceContext               = BeginPaint(hWnd, &paintStruct);
@@ -96,7 +94,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             if (linesDrawn <= 0)
             {
-                OutputDebugString((win32string)"SetDIBitsToDevice failed\n");
+                LogInfo("SetDIBitsToDevice drew zero lines\n");
             }
         }
         break;
@@ -118,16 +116,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+    InitLogger( );
+
     // CREATE WINDOW CLASS
     WNDCLASSEX windowClass      = {};
     windowClass.cbSize          = sizeof(windowClass);
     windowClass.style           = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     windowClass.lpfnWndProc     = WndProc;
     windowClass.hInstance       = hInstance;
-    windowClass.lpszClassName   = (win32string)"CPURenderer";
+    windowClass.lpszClassName   = TEXT("CPURenderer");
     if (!RegisterClassEx(&windowClass))
     {
-        OutputDebugString((win32string)"Failed to register window class\n");
+        LogError("Failed to register the window's class\n");
         return 1;
     }
 
@@ -165,7 +165,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     g_FrameBuffer.data = VirtualAlloc(0, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     if (!g_FrameBuffer.data)
     {
-        OutputDebugString((win32string)"Failed to create DIB\n");
+        LogError("Failed to create the DIB\n");
         return -1;
     }
 
@@ -186,7 +186,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     );
     if (!windowHandle)
     {
-        OutputDebugString((win32string)"Failed to create window\n");
+        LogError("Failed to create the window\n");
         return 1;
     }
 
