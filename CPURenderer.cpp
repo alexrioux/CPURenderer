@@ -142,7 +142,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int __stdcall Win32_EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
     InitLogger( );
 
@@ -160,7 +160,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     }
 
     // INITIALIZE GLOBAL FRAMEBUFFER & CALCULATE STRIDE
-    g_FrameBuffer = {};
+    g_FrameBuffer                   = {};
     g_FrameBuffer.width             = 1001;
     g_FrameBuffer.height            = 1000;
     g_FrameBuffer.bitsPerPixel      = 24;
@@ -171,7 +171,7 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     unsigned int byteStride         = bitStride >> 3; // divide by 2^3
 
     // CREATE DEVICE INDEPENDANT BITMAP (DIB)
-    g_DIB = {};
+    g_DIB                           = {};
     g_DIB.info                      = {};
     g_DIB.colorUse                  = DIB_RGB_COLORS;
     BITMAPINFOHEADER bitmapHeader   = {};
