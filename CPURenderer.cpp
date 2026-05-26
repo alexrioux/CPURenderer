@@ -1,9 +1,7 @@
 extern "C" int _fltused = 0;
 
 #include <windows.h>
-
-#define ARRAY_COUNT(x) (sizeof(x) / sizeof( ( (x)[0]) ) )
-
+#include "types.h"
 #include "logger.h"
 
 // TODO - restructure memory layout of structs for better packing
@@ -161,8 +159,8 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
     g_DIB.info.bmiHeader            = bitmapHeader;
 
     // ALLOCATE FRAMEBUFFER'S MEMORY
-    SIZE_T size = g_FrameBuffer.height * byteStride;
-    g_FrameBuffer.data = VirtualAlloc(0, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    ulong bufferSize            = g_FrameBuffer.height * byteStride;
+    g_FrameBuffer.data          = VirtualAlloc(0, bufferSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
     if (!g_FrameBuffer.data)
     {
         LogError("Failed to create the DIB\n");
