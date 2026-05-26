@@ -166,8 +166,6 @@ int __stdcall Win32EntryPoint(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWST
         return -1;
     }
 
-    RenderGradient(g_FrameBuffer);
-
     // CREATE WINDOW
     HWND windowHandle = CreateWindowEx(
         0,
