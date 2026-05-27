@@ -13,12 +13,12 @@ static HANDLE g_win32StdErrHandle   = 0;
 
 static void Win32_Utf8ToUtf16(const void* data, wchar_t* dest);
 static void Win32_PrintDbgErrMsg(DWORD errorCode);
-static void Win32_Log(HANDLE stdHandle, const char* str, WORD colorAttribute);
+static void Win32_Log(HANDLE stdHandle, const char* str, ulong size, WORD colorAttribute);
 static ulong StringLength(const char* str);
 void InitLogger( );
-void LogInfo(const char* str);
-void LogWarning(const char* str);
-void LogError(const char* str);
+void PlatformLogInfo(const char* str, ulong size);
+void PlatformLogWarning(const char* str, ulong size);
+void PlatformLogError(const char* str, ulong size);
 
 void InitLogger( )
 {
@@ -42,7 +42,21 @@ void InitLogger( )
         }
     }
 }
-static void Win32_Log(HANDLE outputHandle, const char* str, WORD colorAttribute)
+void PlatformLogInfo(const char* str, ulong size)
+{
+    Win32_Log(g_win32StdOutHandle, str, size, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+}
+void PlatformLogWarning(const char* str, ulong size)
+{
+    Win32_Log(g_win32StdOutHandle, str, size, FOREGROUND_GREEN | FOREGROUND_RED);
+}
+void PlatformLogError(const char* str, ulong size)
+{
+    // TODO - Maybe pipe this to a file?
+    Win32_Log(g_win32StdErrHandle, str, size, FOREGROUND_RED);
+}
+
+static void Win32_Log(HANDLE outputHandle, const char* str, ulong size, WORD colorAttribute)
 {
     CONSOLE_SCREEN_BUFFER_INFO consoleInfo = {};
     GetConsoleScreenBufferInfo(outputHandle, &consoleInfo);
@@ -50,40 +64,13 @@ static void Win32_Log(HANDLE outputHandle, const char* str, WORD colorAttribute)
     SetConsoleTextAttribute(outputHandle, colorAttribute);
 
     DWORD charsWritten = 0;
-    DWORD bytesToWrite = (DWORD)StringLength(str);
-    if (!WriteFile(outputHandle, str, bytesToWrite, &charsWritten, 0))
+    if (!WriteFile(outputHandle, str, (DWORD)size, &charsWritten, 0))
     {
         OutputDebugStringW(L"win32_logger: Failed to log message -> ");
         Win32_PrintDbgErrMsg(GetLastError( ));
     }
 
     SetConsoleTextAttribute(outputHandle, consoleInfo.wAttributes); // Reset to original color
-}
-
-void LogInfo(const char* str)
-{
-    Win32_Log(g_win32StdOutHandle, str, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-}
-void LogWarning(const char* str)
-{
-    Win32_Log(g_win32StdOutHandle, str, FOREGROUND_GREEN | FOREGROUND_RED);
-}
-void LogError(const char* str)
-{
-    // TODO - Maybe pipe this to a file?
-    Win32_Log(g_win32StdErrHandle, str, FOREGROUND_RED);
-}
-
-static ulong StringLength(const char* str)
-{
-    ulong length    = 0;
-    const char* c   = &(str[0]);
-    while (*c != '\0')
-    {
-        length++;
-        c++;
-    }
-    return length;
 }
 static void Win32_PrintDbgErrMsg(DWORD errorCode)
 {
